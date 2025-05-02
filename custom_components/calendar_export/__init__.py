@@ -15,6 +15,6 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
       if name == "secret":
         secret_api = str(value)
 
-    hass.http.register_view(AnniversaryExportAPI(secret_api))
+    hass.http.register_view(AnniversaryExportAPI(hass=hass, secret=secret_api))
 
     return True
