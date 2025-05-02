@@ -3,9 +3,6 @@
 from datetime import timedelta
 from http import HTTPStatus
 from homeassistant.core import HomeAssistant
-from dateutil.parser import isoparse
-
-import pytz
 from aiohttp import web
 from homeassistant.components import http
 
@@ -54,13 +51,12 @@ class AnniversaryExportAPI(http.HomeAssistantView):
         cal["X-WR-CALNAME"] = "Anniversaries"
         cal["PRODID"] = "-//Home Assistant//Calendar Export//EN"
 
-        tz = pytz.timezone(self.hass.config.time_zone)
 
         for a in anniversaries:
             start = a.attributes.get("next_date")
             e = Event()
             e.add("uid", a.entity_id)
-            e.add("summary", a.attributes.get("friendly_name"))
+            e.add("summary", f"{a.attributes.get("friendly_name")} ({a.attributes.get("years_at_anniversary")})ans")
             e.add("dtstart", start)
             e.add("dtend", start + timedelta(days=1))
             cal.add_component(e)
