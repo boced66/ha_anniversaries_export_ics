@@ -1,11 +1,14 @@
 """API for calendar export."""
 
-from aiohttp import web
 from datetime import timedelta
+from http import HTTPStatus
+
+from aiohttp import web
+from icalendar import Calendar, Event
+
 from homeassistant.components import http
 from homeassistant.core import HomeAssistant
-from http import HTTPStatus
-from icalendar import Calendar, Event
+
 
 
 class AnniversaryExportAPI(http.HomeAssistantView):
@@ -44,7 +47,8 @@ class AnniversaryExportAPI(http.HomeAssistantView):
             state
             for state in self.hass.states.async_all()
             if state.entity_id.startswith("sensor.")
-            and state.attributes.get("attribution") == "Sensor data calculated by Anniversaries Integration"
+            and state.attributes.get("attribution") == 
+                "Sensor data calculated by Anniversaries Integration"
         ]
 
         if not anniversaries:
