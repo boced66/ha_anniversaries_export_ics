@@ -1,18 +1,17 @@
 {
-    "domain": "calendar_export",
-    "name": "Calendar Export",
+    "domain": "anniversaries_export_ics",
+    "name": "Anniversaries Export ICS",
     "version": "0.1.0",
-    "documentation": "https://github.com/josephabbey/ha_calendar_export",
+    "documentation": "https://github.com/boced66/ha_anniversaries_export_ics",
     "iot_class": "local_push",
-    "issue_tracker": "https://github.com/josephabbey/ha_calendar_export/issues",
+    "issue_tracker": "https://github.com/boced66/ha_anniversaries_export_ics/issues",
     "requirements": [
         "icalendar==5.0.13"
     ],
     "dependencies": [
-        "calendar",
-        "todo"
+        "calendar"
     ],
     "codeowners": [
-        "@josephabbey"
+        "@boced66"
     ]
 }

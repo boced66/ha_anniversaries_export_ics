@@ -2,15 +2,19 @@
 
 from homeassistant.core import HomeAssistant
 
-from .api import CalendarExportAPI, TodoListExportAPI, TodoListExportEventsAPI
+from .api import AnniversaryExportAPI
 
-DOMAIN = "calendar_export"
+DOMAIN = "anniversaries_export_ics"
 
 
-async def async_setup(hass: HomeAssistant, _config: dict) -> bool:
-    """Set up the calendar_export component."""
-    hass.http.register_view(CalendarExportAPI())
-    hass.http.register_view(TodoListExportAPI())
-    hass.http.register_view(TodoListExportEventsAPI())
+async def async_setup(hass: HomeAssistant, config: dict) -> bool:
+    """Set up the anniversaries_export_ics component."""
+    secret_api = ""
+    
+    for name, value in config[DOMAIN].items():
+      if name == "secret":
+        secret_api = str(value)
+
+    hass.http.register_view(AnniversaryExportAPI(secret_api))
 
     return True

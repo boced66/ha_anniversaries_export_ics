@@ -1,5 +1,5 @@
 {
-    "name": "Calendar Export",
+    "name": "Anniversaries Export",
     "hide_default_branch": true,
     "homeassistant": "2023.11.0",
     "render_readme": true

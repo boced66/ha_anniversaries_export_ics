@@ -1,64 +1,68 @@
 """API for calendar export."""
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 from http import HTTPStatus
+from homeassistant.core import HomeAssistant
+from dateutil.parser import isoparse
 
 import pytz
 from aiohttp import web
 from homeassistant.components import http
-from homeassistant.components.calendar import DOMAIN as CALENDAR_DOMAIN
-from homeassistant.components.calendar import CalendarEntity
-from homeassistant.components.todo import (
-    DOMAIN as TODO_DOMAIN,
-)
-from homeassistant.components.todo import (
-    TodoListEntity,
-)
-from icalendar import Calendar, Event, Todo
 
+from icalendar import Calendar, Event
 
-class CalendarExportAPI(http.HomeAssistantView):
-    """View to export calendar in ICS format."""
+class AnniversaryExportAPI(http.HomeAssistantView):
+    """View to export anniversaries in ICS format."""
 
-    url = "/api/calendars/{entity_id}/export.ics"
-    name = "api:calendars:ics"
+    url = "/api/anniversaries/export.ics"
+    name = "api:anniversaries:ics"
     requires_auth = False
 
-    async def get(self, request: web.Request, entity_id: str):  # noqa: ANN201
-        """Handle GET requests to export calendar in ICS format."""
-        hass = request.app[http.KEY_HASS]
+    def __init__(self, secret: str, hass: HomeAssistant) -> None:
+        """Initialize the iCalendar view."""
+        self.secret_api = secret
+        self.hass = hass
+        
 
-        if not (
-            entity := hass.data[CALENDAR_DOMAIN].get_entity(entity_id)
-        ) or not isinstance(entity, CalendarEntity):
-            return web.Response(status=HTTPStatus.BAD_REQUEST)
+    async def get(self, request: web.Request):  # noqa: ANN201
+        """Handle GET requests to export anniversaries in ICS format."""
+        
 
-        if not isinstance(entity, CalendarEntity):
-            return web.Response(status=HTTPStatus.BAD_REQUEST)
+        secret_url = request.query.get("s")
+        if secret_url is None:
+          secret_url = ""
 
+        #Le secret de la configuration ne correspond pas a celui du paramètre
+        if secret_url != self.secret_api:
+          return web.Response(body="403: Forbidden", status=HTTPStatus.FORBIDDEN)
+
+        #TODO : récupérer la liste des anniversaires
+        anniversaries = [
+            state
+            for state in self.hass.states.async_all()
+            if state.entity_id.startswith("sensor.")
+            and state.attributes.get("attribution") == "Sensor data calculated by Anniversaries Integration"
+        ]
+
+        if not anniversaries:
+            return web.Response(
+                body="No anniversaries found",
+                status=HTTPStatus.NOT_FOUND,
+            )
         # Generate ICS data
         cal = Calendar()
-        cal["X-WR-CALNAME"] = entity.name
+        cal["X-WR-CALNAME"] = "Anniversaries"
         cal["PRODID"] = "-//Home Assistant//Calendar Export//EN"
 
-        tz = pytz.timezone(hass.config.time_zone)
+        tz = pytz.timezone(self.hass.config.time_zone)
 
-        events = await entity.async_get_events(
-            hass,
-            datetime.now(tz=tz) - timedelta(days=365),
-            datetime.now(tz=tz) + timedelta(days=365),
-        )
-
-        for event in events:
+        for a in anniversaries:
+            start = isoparse(a.attributes.get("next_date"))
             e = Event()
-            e.add("uid", event.uid)
-            e.add("summary", event.summary)
-            e.add("dtstart", event.start)
-            e.add("dtend", event.end)
-            if event.description:
-                e.add("description", event.description)
-            if event.location:
-                e.add("location", event.location)
+            e.add("uid", a.entity_id)
+            e.add("summary", a.attributes.get("friendly_name"))
+            e.add("dtstart", start)
+            e.add("dtend", start + timedelta(days=1))
             cal.add_component(e)
 
         ics = cal.to_ical().decode("utf-8")
@@ -70,98 +74,5 @@ class CalendarExportAPI(http.HomeAssistantView):
             headers={"Content-Type": "text/calendar"},
         )
 
-
-class TodoListExportAPI(http.HomeAssistantView):
-    """View to export todo list in ICS format."""
-
-    url = "/api/todo/{entity_id}/export.ics"
-    name = "api:todo:ics"
-    requires_auth = False
-
-    async def get(self, request: web.Request, entity_id: str):  # noqa: ANN201
-        """Handle GET requests to export todo list in ICS format."""
-        hass = request.app[http.KEY_HASS]
-
-        if not (entity := hass.data[TODO_DOMAIN].get_entity(entity_id)):
-            return web.Response(status=HTTPStatus.BAD_REQUEST)
-
-        if not isinstance(entity, TodoListEntity):
-            return web.Response(status=HTTPStatus.BAD_REQUEST)
-
-        # Generate ICS data
-        todo = Calendar()
-        todo["X-WR-CALNAME"] = entity.name
-        todo["PRODID"] = "-//Home Assistant//Todo List Export//EN"
-
-        todos = entity.todo_items
-
-        if todos:
-            for todo_item in todos:
-                t = Todo()
-                t.add("uid", todo_item.uid)
-                t.add("summary", todo_item.summary)
-                if todo_item.due:
-                    t.add("due", todo_item.due)
-                if todo_item.description:
-                    t.add("description", todo_item.description)
-                if todo_item.status:
-                    t.add("status", todo_item.status.value)
-                todo.add_component(t)
-
-        ics = todo.to_ical().decode("utf-8")
-
-        # Return ICS data as response
-        return web.Response(
-            status=HTTPStatus.OK,
-            body=ics,
-            headers={"Content-Type": "text/calendar"},
-        )
-
-
-class TodoListExportEventsAPI(http.HomeAssistantView):
-    """View to export todo list in ICS format (using vevent not vtodo)."""
-
-    url = "/api/todo/{entity_id}/export_events.ics"
-    name = "api:todo:events_ics"
-    requires_auth = False
-
-    async def get(self, request: web.Request, entity_id: str):  # noqa: ANN201
-        """Handle GET requests to export todo list in ICS format."""
-        hass = request.app[http.KEY_HASS]
-
-        if not (entity := hass.data[TODO_DOMAIN].get_entity(entity_id)):
-            return web.Response(status=HTTPStatus.BAD_REQUEST)
-
-        if not isinstance(entity, TodoListEntity):
-            return web.Response(status=HTTPStatus.BAD_REQUEST)
-
-        # Generate ICS data
-        todo = Calendar()
-        todo["X-WR-CALNAME"] = entity.name
-        todo["PRODID"] = "-//Home Assistant//Todo List Export Events//EN"
-
-        todos = entity.todo_items
-
-        if todos:
-            for todo_item in todos:
-                t = Event()
-                t.add("uid", todo_item.uid)
-                t.add("summary", todo_item.summary)
-                if todo_item.due:
-                    t.add("dtstart", todo_item.due)
-                if todo_item.due:
-                    t.add("dtend", todo_item.due)
-                if todo_item.description:
-                    t.add("description", todo_item.description)
-                if todo_item.status:
-                    t.add("status", todo_item.status.value)
-                todo.add_component(t)
-
-        ics = todo.to_ical().decode("utf-8")
-
-        # Return ICS data as response
-        return web.Response(
-            status=HTTPStatus.OK,
-            body=ics,
-            headers={"Content-Type": "text/calendar"},
-        )
+        
+        
