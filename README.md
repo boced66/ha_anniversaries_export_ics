@@ -8,7 +8,7 @@
 
 [![Community Forum][forum-shield]][forum]
 
-The integration provides the `https://<your-domain>/api/calendars/{entity_id}/export.ics` endpoint to export the calendar events in the iCalendar format.
+The integration provides the `https://<your-domain>/api/anniversaries/export.ics?s=my_secret_key` endpoint to export the calendar events in the iCalendar format.
 
 ## Installation
 
@@ -16,8 +16,8 @@ The integration provides the `https://<your-domain>/api/calendars/{entity_id}/ex
 
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 1. If you do not have a `custom_components` directory (folder) there, you need to create it.
-1. In the `custom_components` directory (folder) create a new folder called `calendar_export`.
-1. Download _all_ the files from the `custom_components/calendar_export/` directory (folder) in this repository.
+1. In the `custom_components` directory (folder) create a new folder called `anniversaries_export_ics`.
+1. Download _all_ the files from the `custom_components/anniversaries_export_ics/` directory (folder) in this repository.
 1. Place the files you downloaded in the new directory (folder) you created.
 1. Restart Home Assistant
 1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Integration blueprint"
@@ -27,7 +27,8 @@ The integration provides the `https://<your-domain>/api/calendars/{entity_id}/ex
 Just add this at top level:
 
 ```yaml
-calendar_export:
+anniversaries_export_ics:
+    secret:my_secret_key
 ```
 
 <!---->
