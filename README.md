@@ -1,8 +1,11 @@
 # Anniversaries Export ICS / Export des anniversaires au format ICS
 
-[![GitHub Release][releases-shield]][releases]  
-[![GitHub Activity][commits-shield]][commits]  
-[![License][license-shield]](LICENSE)  
+[![GitHub Release][releases-shield]][releases]
+[![GitHub Activity][commits-shield]][commits]
+[![License][license-shield]](LICENSE)
+
+![Project Maintenance][maintenance-shield]
+
 [![Community Forum][forum-shield]][forum]
 
 📅 This Home Assistant integration exports anniversaries created with the [Anniversaries integration](https://github.com/pinkywafer/Anniversaries) into an iCalendar (`.ics`) file accessible via a URL.  
