@@ -15,9 +15,19 @@ class AnniversaryExportAPI(http.HomeAssistantView):
     name = "api:anniversaries:ics"
     requires_auth = False
 
-    def __init__(self, secret: str, hass: HomeAssistant) -> None:
+    def __init__(self, hass: HomeAssistant, config: dict, DOMAIN: str) -> None:
         """Initialize the iCalendar view."""
-        self.secret_api = secret
+        self.secret_api = ""
+        self.agenda_name = "Anniversaries"
+        summary_format = "{name} ({years_at_anniversary})"
+
+        for name, value in config[DOMAIN].items():
+            if name == "secret":
+                self.secret_api = str(value)
+            if name == "agenda_name":
+                self.agenda_name = str(value)
+            if name == "summary_format":
+                self.summary_format = str(value)
         self.hass = hass
         
 
@@ -48,7 +58,7 @@ class AnniversaryExportAPI(http.HomeAssistantView):
             )
         # Generate ICS data
         cal = Calendar()
-        cal["X-WR-CALNAME"] = "Anniversaries"
+        cal["X-WR-CALNAME"] = self.agenda_name
         cal["PRODID"] = "-//Home Assistant//Calendar Export//EN"
 
 
@@ -56,7 +66,9 @@ class AnniversaryExportAPI(http.HomeAssistantView):
             start = a.attributes.get("next_date")
             e = Event()
             e.add("uid", a.entity_id)
-            e.add("summary", f"{a.attributes.get("friendly_name")} ({a.attributes.get("years_at_anniversary")})ans")
+            e.add("summary", self.summary_format.format(
+                name=a.attributes.get("friendly_name"), 
+                years_at_anniversary=a.attributes.get("years_at_anniversary")))
             e.add("dtstart", start)
             e.add("dtend", start + timedelta(days=1))
             cal.add_component(e)
