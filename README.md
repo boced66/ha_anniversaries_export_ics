@@ -1,37 +1,85 @@
-# Calendar Export
+# Anniversaries Export ICS / Export des anniversaires au format ICS
 
-[![GitHub Release][releases-shield]][releases]
-[![GitHub Activity][commits-shield]][commits]
-[![License][license-shield]](LICENSE)
-
-![Project Maintenance][maintenance-shield]
-
+[![GitHub Release][releases-shield]][releases]  
+[![GitHub Activity][commits-shield]][commits]  
+[![License][license-shield]](LICENSE)  
 [![Community Forum][forum-shield]][forum]
 
-The integration provides the `https://<your-domain>/api/anniversaries/export.ics?s=my_secret_key` endpoint to export the calendar events in the iCalendar format.
+📅 This Home Assistant integration exports anniversaries created with the [Anniversaries integration](https://github.com/pinkywafer/Anniversaries) into an iCalendar (`.ics`) file accessible via a URL.  
+🇫🇷 Cette intégration Home Assistant permet d’exporter les anniversaires créés avec l’intégration [Anniversaries](https://github.com/pinkywafer/Anniversaries) vers un fichier iCalendar (`.ics`) accessible via une URL.
 
-## Installation
+---
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=JosephAbbey&repository=ha_calendar_export&category=Integration)
+## 🔧 Installation
+### HACS
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=boced66&repository=ha_anniversaries_export_ics&category=Integration)
 
-1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
-1. If you do not have a `custom_components` directory (folder) there, you need to create it.
-1. In the `custom_components` directory (folder) create a new folder called `anniversaries_export_ics`.
-1. Download _all_ the files from the `custom_components/anniversaries_export_ics/` directory (folder) in this repository.
-1. Place the files you downloaded in the new directory (folder) you created.
-1. Restart Home Assistant
-1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Integration blueprint"
+### Manual
+1. Open your Home Assistant `config` directory (where your `configuration.yaml` is).
+2. If not present, create a folder named `custom_components`.
+3. Inside it, create a folder named `anniversaries_export_ics`.
+4. Download and copy all files from this repository's `custom_components/anniversaries_export_ics/` folder into the one you just created.
+5. Restart Home Assistant.
+6. Configure via YAML (see below).
 
-## Configuration is done in the YAML file
+---
 
-Just add this at top level:
+## ⚙️ YAML Configuration
+
+Add to your `configuration.yaml`:
 
 ```yaml
 anniversaries_export_ics:
-    secret:my_secret_key
+  secret: my_secret_key
+  agenda_name: "Anniversaires"
+  summary_format: "{friendly_name} fête ses {current_years} ans 🎉"
 ```
 
-<!---->
+### 🔐 Parameters
+
+| Parameter        | Required | Description |
+|------------------|----------|-------------|
+| `secret`         | ✅        | Secret key required in the export URL. |
+| `agenda_name`    | ❌        | The calendar name shown in the ICS file. |
+| `summary_format` | ❌        | Format string used for each event. You can use the placeholders listed below. |
+
+#### Available placeholders for `summary_format`:
+
+- `{friendly_name}`
+- `{years_at_anniversary}`
+- `{current_years}`
+- `{date}`
+- `{next_date}`
+- `{weeks_remaining}`
+- `{unit_of_measurement}`
+- `{icon}`
+
+## 📥 ICS URL
+Once configured, your calendar will be available at:
+```
+https://<your-home-assistant-url>/api/anniversaries/export.ics?s=<your_secret>
+```
+
+---
+
+## 🧭 Original Repository
+
+This project is a **fork** of [`JosephAbbey/ha_calendar_export`](https://github.com/JosephAbbey/ha_calendar_export).
+
+While the original project exported events from any Home Assistant calendar entity, this fork focuses specifically on the [`Anniversaries`](https://github.com/pinkywafer/Anniversaries) integration and adapts the logic to work with its sensor entities.
+
+Many changes have been made to better support this use case.
+
+---
+
+## 🧭 Dépôt d'origine
+
+Ce projet est un **fork** de [`JosephAbbey/ha_calendar_export`](https://github.com/JosephAbbey/ha_calendar_export).
+
+Alors que le projet original permettait d’exporter les événements depuis n’importe quelle entité de type "calendar", ce fork se concentre exclusivement sur l’intégration [`Anniversaries`](https://github.com/pinkywafer/Anniversaries) et adapte la logique pour fonctionner avec les capteurs créés par celle-ci.
+
+De nombreuses modifications ont été apportées pour mieux répondre à ce cas d’usage.
+
 
 ## Contributions are welcome!
 
@@ -39,12 +87,4 @@ If you want to contribute to this please read the [Contribution guidelines](CONT
 
 ***
 
-[ha_calendar_export]: https://github.com/josephabbey/ha_calendar_export
-[commits-shield]: https://img.shields.io/github/commit-activity/y/josephabbey/ha_calendar_export.svg?style=for-the-badge
-[commits]: https://github.com/josephabbey/ha_calendar_export/commits/main
-[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
-[forum]: https://community.home-assistant.io/
-[license-shield]: https://img.shields.io/github/license/josephabbey/ha_calendar_export.svg?style=for-the-badge
-[maintenance-shield]: https://img.shields.io/badge/maintainer-Joakim%20Sørensen%20%40ludeeus-blue.svg?style=for-the-badge
-[releases-shield]: https://img.shields.io/github/release/josephabbey/ha_calendar_export.svg?style=for-the-badge
-[releases]: https://github.com/josephabbey/ha_calendar_export/releases
+
