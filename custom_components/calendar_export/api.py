@@ -19,7 +19,7 @@ class AnniversaryExportAPI(http.HomeAssistantView):
         """Initialize the iCalendar view."""
         self.secret_api = ""
         self.agenda_name = "Anniversaries"
-        summary_format = "{name} ({years_at_anniversary})"
+        self.summary_format = "{name} ({years_at_anniversary})"
 
         for name, value in config[DOMAIN].items():
             if name == "secret":
