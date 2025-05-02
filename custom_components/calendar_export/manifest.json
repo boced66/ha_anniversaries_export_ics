@@ -1,7 +1,7 @@
 {
     "domain": "anniversaries_export_ics",
     "name": "Anniversaries Export ICS",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "documentation": "https://github.com/boced66/ha_anniversaries_export_ics",
     "iot_class": "local_push",
     "issue_tracker": "https://github.com/boced66/ha_anniversaries_export_ics/issues",
