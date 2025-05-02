@@ -19,7 +19,7 @@ class AnniversaryExportAPI(http.HomeAssistantView):
         """Initialize the iCalendar view."""
         self.secret_api = ""
         self.agenda_name = "Anniversaries"
-        self.summary_format = "{name} ({years_at_anniversary})"
+        self.summary_format = "{friendly_name} ({years_at_anniversary})"
 
         for name, value in config[DOMAIN].items():
             if name == "secret":
@@ -67,8 +67,15 @@ class AnniversaryExportAPI(http.HomeAssistantView):
             e = Event()
             e.add("uid", a.entity_id)
             e.add("summary", self.summary_format.format(
-                name=a.attributes.get("friendly_name"), 
-                years_at_anniversary=a.attributes.get("years_at_anniversary")))
+                friendly_name=a.attributes.get("friendly_name"), 
+                years_at_anniversary=a.attributes.get("years_at_anniversary"),
+                current_years=a.attributes.get("current_years"),
+                date=a.attributes.get("date"),
+                next_date=a.attributes.get("next_date"),
+                weeks_remaining=a.attributes.get("weeks_remaining"),
+                unit_of_measurement=a.attributes.get("unit_of_measurement"),
+                icon=a.attributes.get("icon")
+            ))
             e.add("dtstart", start)
             e.add("dtend", start + timedelta(days=1))
             cal.add_component(e)
