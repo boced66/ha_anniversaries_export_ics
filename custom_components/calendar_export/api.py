@@ -57,7 +57,7 @@ class AnniversaryExportAPI(http.HomeAssistantView):
         tz = pytz.timezone(self.hass.config.time_zone)
 
         for a in anniversaries:
-            start = isoparse(a.attributes.get("next_date"))
+            start = a.attributes.get("next_date")
             e = Event()
             e.add("uid", a.entity_id)
             e.add("summary", a.attributes.get("friendly_name"))
