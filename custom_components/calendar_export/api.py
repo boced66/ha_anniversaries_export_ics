@@ -35,18 +35,18 @@ class AnniversaryExportAPI(http.HomeAssistantView):
         """Handle GET requests to export anniversaries in ICS format."""
         secret_url = request.query.get("s")
         if secret_url is None:
-          secret_url = ""
+            secret_url = ""
 
-        #Le secret de la configuration ne correspond pas a celui du paramètre
+        # Le secret de la configuration ne correspond pas a celui du paramètre
         if secret_url != self.secret_api:
-          return web.Response(body="403: Forbidden", status=HTTPStatus.FORBIDDEN)
+            return web.Response(body="403: Forbidden", status=HTTPStatus.FORBIDDEN)
 
         anniversaries = [
             state
             for state in self.hass.states.async_all()
             if state.entity_id.startswith("sensor.")
             and state.attributes.get("attribution") ==
-                "Sensor data calculated by Anniversaries Integration"
+            "Sensor data calculated by Anniversaries Integration"
         ]
 
         if not anniversaries:
@@ -58,7 +58,6 @@ class AnniversaryExportAPI(http.HomeAssistantView):
         cal = Calendar()
         cal["X-WR-CALNAME"] = self.agenda_name
         cal["PRODID"] = "-//Home Assistant//Calendar Export//EN"
-
 
         for a in anniversaries:
             start = a.attributes.get("next_date")
