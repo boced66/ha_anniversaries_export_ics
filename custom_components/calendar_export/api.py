@@ -45,8 +45,8 @@ class AnniversaryExportAPI(http.HomeAssistantView):
             state
             for state in self.hass.states.async_all()
             if state.entity_id.startswith("sensor.")
-            and state.attributes.get("attribution") ==
-            "Sensor data calculated by Anniversaries Integration"
+            and state.attributes.get("attribution")
+            == "Sensor data calculated by Anniversaries Integration"
         ]
 
         if not anniversaries:
@@ -63,16 +63,19 @@ class AnniversaryExportAPI(http.HomeAssistantView):
             start = a.attributes.get("next_date")
             e = Event()
             e.add("uid", a.entity_id)
-            e.add("summary", self.summary_format.format(
-                friendly_name=a.attributes.get("friendly_name"),
-                years_at_anniversary=a.attributes.get("years_at_anniversary"),
-                current_years=a.attributes.get("current_years"),
-                date=a.attributes.get("date"),
-                next_date=a.attributes.get("next_date"),
-                weeks_remaining=a.attributes.get("weeks_remaining"),
-                unit_of_measurement=a.attributes.get("unit_of_measurement"),
-                icon=a.attributes.get("icon")
-            ))
+            e.add(
+                "summary",
+                self.summary_format.format(
+                    friendly_name=a.attributes.get("friendly_name"),
+                    years_at_anniversary=a.attributes.get("years_at_anniversary"),
+                    current_years=a.attributes.get("current_years"),
+                    date=a.attributes.get("date"),
+                    next_date=a.attributes.get("next_date"),
+                    weeks_remaining=a.attributes.get("weeks_remaining"),
+                    unit_of_measurement=a.attributes.get("unit_of_measurement"),
+                    icon=a.attributes.get("icon"),
+                ),
+            )
             e.add("dtstart", start)
             e.add("dtend", start + timedelta(days=1))
             cal.add_component(e)
