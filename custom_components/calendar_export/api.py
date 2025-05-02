@@ -1,12 +1,12 @@
 """API for calendar export."""
 
-from datetime import timedelta
-from http import HTTPStatus
-from homeassistant.core import HomeAssistant
 from aiohttp import web
+from datetime import timedelta
 from homeassistant.components import http
-
+from homeassistant.core import HomeAssistant
+from http import HTTPStatus
 from icalendar import Calendar, Event
+
 
 class AnniversaryExportAPI(http.HomeAssistantView):
     """View to export anniversaries in ICS format."""
@@ -15,13 +15,13 @@ class AnniversaryExportAPI(http.HomeAssistantView):
     name = "api:anniversaries:ics"
     requires_auth = False
 
-    def __init__(self, hass: HomeAssistant, config: dict, DOMAIN: str) -> None:
+    def __init__(self, hass: HomeAssistant, config: dict, domain: str) -> None:
         """Initialize the iCalendar view."""
         self.secret_api = ""
         self.agenda_name = "Anniversaries"
         self.summary_format = "{friendly_name} ({years_at_anniversary})"
 
-        for name, value in config[DOMAIN].items():
+        for name, value in config[domain].items():
             if name == "secret":
                 self.secret_api = str(value)
             if name == "agenda_name":
@@ -29,12 +29,9 @@ class AnniversaryExportAPI(http.HomeAssistantView):
             if name == "summary_format":
                 self.summary_format = str(value)
         self.hass = hass
-        
 
     async def get(self, request: web.Request):  # noqa: ANN201
         """Handle GET requests to export anniversaries in ICS format."""
-        
-
         secret_url = request.query.get("s")
         if secret_url is None:
           secret_url = ""
@@ -43,7 +40,6 @@ class AnniversaryExportAPI(http.HomeAssistantView):
         if secret_url != self.secret_api:
           return web.Response(body="403: Forbidden", status=HTTPStatus.FORBIDDEN)
 
-        #TODO : récupérer la liste des anniversaires
         anniversaries = [
             state
             for state in self.hass.states.async_all()
@@ -67,7 +63,7 @@ class AnniversaryExportAPI(http.HomeAssistantView):
             e = Event()
             e.add("uid", a.entity_id)
             e.add("summary", self.summary_format.format(
-                friendly_name=a.attributes.get("friendly_name"), 
+                friendly_name=a.attributes.get("friendly_name"),
                 years_at_anniversary=a.attributes.get("years_at_anniversary"),
                 current_years=a.attributes.get("current_years"),
                 date=a.attributes.get("date"),
@@ -88,6 +84,3 @@ class AnniversaryExportAPI(http.HomeAssistantView):
             body=ics,
             headers={"Content-Type": "text/calendar"},
         )
-
-        
-        
