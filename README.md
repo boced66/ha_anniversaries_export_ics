@@ -1,12 +1,13 @@
 # Anniversaries Export ICS / Export des anniversaires au format ICS
 
-[![GitHub Release][releases-shield]][releases]
-[![GitHub Activity][commits-shield]][commits]
-[![License][license-shield]](LICENSE)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/boced66/ha_anniversaries_export_ics)](https://github.com/boced66/ha_anniversaries_export_ics/releases)
+![GitHub Release Date](https://img.shields.io/github/release-date/boced66/ha_anniversaries_export_ics)
+[![GitHub](https://img.shields.io/github/license/boced66/ha_anniversaries_export_ics)](LICENSE)
 
-![Project Maintenance][maintenance-shield]
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-Yes-brightgreen.svg)](https://github.com/boced66/ha_anniversaries_export_ics/graphs/commit-activity)
+[![GitHub issues](https://img.shields.io/github/issues/pinkywafer/Anniversaries)](https://github.com/boced66/ha_anniversaries_export_ics/issues)
 
-[![Community Forum][forum-shield]][forum]
 
 📅 This Home Assistant integration exports anniversaries created with the [Anniversaries integration](https://github.com/pinkywafer/Anniversaries) into an iCalendar (`.ics`) file accessible via a URL.  
 🇫🇷 Cette intégration Home Assistant permet d’exporter les anniversaires créés avec l’intégration [Anniversaries](https://github.com/pinkywafer/Anniversaries) vers un fichier iCalendar (`.ics`) accessible via une URL.
