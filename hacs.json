@@ -2,6 +2,5 @@
     "name": "Anniversaries Export (ICS)",
     "hide_default_branch": true,
     "homeassistant": "2025.4.4",
-    "country": ["BE"], 
-    "content_in_root": true
+    "country": ["BE"]
 }

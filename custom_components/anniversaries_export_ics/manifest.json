@@ -1,7 +1,7 @@
 {
     "domain": "anniversaries_export_ics",
     "name": "Anniversaries Export (ICS)",
-    "version": "2025.05.01.b19",
+    "version": "2025.5.1",
     "integration_type" : "service",
     "documentation": "https://github.com/boced66/ha_anniversaries_export_ics",
     "issue_tracker": "https://github.com/boced66/ha_anniversaries_export_ics/issues",
