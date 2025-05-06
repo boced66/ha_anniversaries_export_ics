@@ -1,4 +1,4 @@
-"""The calendar_export component."""
+"""The ha_anniversaries_export_ics component."""
 
 from homeassistant.core import HomeAssistant
 
