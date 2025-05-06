@@ -1,0 +1,46 @@
+name: "Release on manifest.json version bump"
+
+on:
+  push:
+    paths:
+      - 'custom_components/ha_anniversaries_export_ics/manifest.json'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get version from manifest.json
+        id: get_version
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const mf = JSON.parse(fs.readFileSync('custom_components/ha_anniversaries_export_ics/manifest.json'));
+            return mf.version;
+
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          VERSION="v${{ steps.get_version.outputs.result }}"
+          if git fetch --tags && git rev-parse "$VERSION" >/dev/null 2>&1; then
+            echo "Tag $VERSION already exists"
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "Tag $VERSION does not exist"
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GitHub Release
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: ncipollo/release-action@v1
+        with:
+          tag: v${{ steps.get_version.outputs.result }}
+          name: Release v${{ steps.get_version.outputs.result }}
+          draft: false
+          prerelease: ${{ contains( steps.get_version.outputs.result, '-' ) }}

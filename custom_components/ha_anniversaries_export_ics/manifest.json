@@ -1,15 +1,16 @@
 {
-    "domain": "anniversaries_export_ics",
-    "name": "Anniversaries Export ICS",
-    "version": "0.2.0",
+    "domain": "ha_anniversaries_export_ics",
+    "name": "ha_anniversaries_export_ics",
+    "version": "2025.05-beta1",
+    "integration_type" : "service",
     "documentation": "https://github.com/boced66/ha_anniversaries_export_ics",
-    "iot_class": "local_push",
     "issue_tracker": "https://github.com/boced66/ha_anniversaries_export_ics/issues",
+    "iot_class": "calculated",
     "requirements": [
-        "icalendar==5.0.13"
+        "icalendar==6.1.3"
     ],
     "dependencies": [
-        "calendar"
+        "anniversaries"
     ],
     "codeowners": [
         "@boced66"
