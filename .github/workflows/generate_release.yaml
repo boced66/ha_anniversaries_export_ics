@@ -17,10 +17,9 @@ jobs:
 
       - name: Get version from manifest.json
         id: get_version
-        with:
-          run: |
-            VERSION=$(jq -r .version custom_components/ha_anniversaries_export_ics/manifest.json)
-            return VERSION;
+        run: |
+          VERSION=$(jq -r .version custom_components/ha_anniversaries_export_ics/manifest.json)
+          return VERSION;
 
       - name: Check if tag exists
         id: check_tag
