@@ -93,26 +93,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      # 2) (Optionnel) Mettre en cache pip ici si tu lis la version en Python
-      - name: Set up Python (to parse manifest)
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-
-      # 3) Extraire la version brute depuis manifest.json (sans jq)
+      # 2) Extraire la version brute depuis manifest.json (avec jq)
       - name: Get version from manifest.json
         id: get_version
         run: |
-          python3 - <<EOF >version.txt
-import json
-mf = json.load(open('custom_components/ha_anniversaries_export_ics/manifest.json'))
-print(mf['version'])
-EOF
-          VERSION=$(cat version.txt)
+          VERSION=$(jq -r '.version' custom_components/ha_anniversaries_export_ics/manifest.json)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      # 4) Vérifier si le tag existe
+      # 3) Vérifier si le tag existe
       - name: Check for existing Git tag
         id: check_tag
         run: |
@@ -123,7 +111,7 @@ EOF
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-      # 5) Créer & pousser le tag si besoin
+      # 4) Créer & pousser le tag si besoin
       - name: Create & push tag
         if: steps.check_tag.outputs.exists == 'false'
         run: |
@@ -133,14 +121,14 @@ EOF
           git tag "$TAG"
           git push origin "$TAG"
 
-      # 6) Archiver l’intégration
+      # 5) Archiver l’intégration
       - name: Package integration
         if: steps.check_tag.outputs.exists == 'false'
         run: |
           cd custom_components/ha_anniversaries_export_ics
           zip -r ha_anniversaries_export_ics.zip ./
 
-      # 7) Créer et uploader la Release
+      # 6) Créer et uploader la Release
       - name: Create GitHub Release
         if: steps.check_tag.outputs.exists == 'false'
         uses: softprops/action-gh-release@v2
