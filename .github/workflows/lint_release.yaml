@@ -5,24 +5,6 @@ on:
     branches:
       - main
 jobs:
-  ruff:
-    name: "Lint with Ruff"
-    runs-on: ubuntu-latest
-
-    steps:
-
-      - name: Install lint dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-lint.txt
-
-      - name: Run Ruff lint (all files, 4 threads)
-        run: python -m ruff check . --threads 4
-
-      - name: Run Ruff format check (4 threads)
-        run: python -m ruff format . --check --threads 4
-
-
   # ───────────────────────────────────────────────────────────────
   # Job A: Ruff lint / format checks (runs on every push)
   # ───────────────────────────────────────────────────────────────
