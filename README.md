@@ -8,7 +8,7 @@
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-Yes-brightgreen.svg)](https://github.com/boced66/ha_anniversaries_export_ics/graphs/commit-activity)
 [![GitHub issues](https://img.shields.io/github/issues/boced66/ha_anniversaries_export_ics)](https://github.com/boced66/ha_anniversaries_export_ics/issues)
 
-[![Buy me a coffee](https://img.shields.io/static/v1.svg?label=Buy%20me%20a%20coffee&logo=buy%20me%20a%20coffee&logoColor=white&labelColor=ff69b4&message=donate&color=Black)](buymeacoffee.com/boced66k)
+[![Buy me a coffee](https://img.shields.io/static/v1.svg?label=Buy%20me%20a%20coffee&logo=buy%20me%20a%20coffee&logoColor=white&labelColor=ff69b4&message=donate&color=Black)](https://buymeacoffee.com/boced66k)
 
 
 📅 This Home Assistant integration exports anniversaries created with the [Anniversaries integration](https://github.com/pinkywafer/Anniversaries) into an iCalendar (`.ics`) file accessible via a URL.  
