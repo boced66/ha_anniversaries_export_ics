@@ -19,12 +19,12 @@ jobs:
         id: get_version
         run: |
           VERSION=$(jq -r .version custom_components/ha_anniversaries_export_ics/manifest.json)
-          return VERSION;
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT;
 
       - name: Check if tag exists
         id: check_tag
         run: |
-          VERSION=${{ steps.get_version.outputs.result }}
+          VERSION=${{ steps.get_version.outputs.VERSION }}
           if git fetch --tags && git rev-parse "$VERSION" >/dev/null 2>&1; then
             echo "Tag $VERSION already exists"
             echo "exists=true" >> $GITHUB_OUTPUT
@@ -37,7 +37,7 @@ jobs:
         if: steps.check_tag.outputs.exists == 'false'
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.get_version.outputs.result }}
-          name: Release ${{ steps.get_version.outputs.result }}
+          tag: ${{ steps.get_version.outputs.VERSION }}
+          name: Release ${{ steps.get_version.outputs.VERSION }}
           draft: false
-          prerelease: ${{ contains( steps.get_version.outputs.result, '-' ) }}
+          prerelease: ${{ contains( steps.get_version.outputs.VERSION, '-' ) }}
