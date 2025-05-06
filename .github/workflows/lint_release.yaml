@@ -69,7 +69,7 @@ jobs:
         with:
           filters: |
             manifest:
-              - 'custom_components/ha_anniversaries_export_ics/manifest.json'
+              - 'custom_components/anniversaries_export_ics/manifest.json'
 
   # ───────────────────────────────────────────────────────────────
   # Job C: Release (only if manifest.json changed & lint passed)
@@ -96,7 +96,7 @@ jobs:
       - name: Get version from manifest.json
         id: get_version
         run: |
-          VERSION=$(jq -r '.version' custom_components/ha_anniversaries_export_ics/manifest.json)
+          VERSION=$(jq -r '.version' custom_components/anniversaries_export_ics/manifest.json)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       # 3) Vérifier si le tag existe
@@ -124,8 +124,8 @@ jobs:
       - name: Package integration
         if: steps.check_tag.outputs.exists == 'false'
         run: |
-          cd custom_components/ha_anniversaries_export_ics
-          zip -r ha_anniversaries_export_ics.zip ./
+          cd custom_components/anniversaries_export_ics
+          zip -r anniversaries_export_ics.zip ./
 
       # 6) Créer et uploader la Release
       - name: Create GitHub Release
@@ -136,4 +136,4 @@ jobs:
           name: Release ${{ steps.get_version.outputs.version }}
           draft: false
           prerelease: ${{ contains( steps.get_version.outputs.version, '-' ) || contains( steps.get_version.outputs.version, 'b') || contains( steps.get_version.outputs.version, 'rc') }}
-          files: custom_components/ha_anniversaries_export_ics/ha_anniversaries_export_ics.zip
+          files: custom_components/anniversaries_export_ics/anniversaries_export_ics.zip
