@@ -22,6 +22,7 @@ jobs:
           script: |
             const fs = require('fs');
             const mf = JSON.parse(fs.readFileSync('custom_components/ha_anniversaries_export_ics/manifest.json'));
+            echo mf.version;
             return mf.version;
 
       - name: Check if tag exists
