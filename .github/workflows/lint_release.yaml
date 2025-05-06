@@ -42,11 +42,11 @@ jobs:
 
       # 5) Lint complet (parallélisé)
       - name: Run Ruff lint (all files)
-        run: python -m ruff check . --jobs 4
+        run: python -m ruff check . 
 
       # 6) Vérification du format Ruff
       - name: Run Ruff format check
-        run: python -m ruff format . --check --jobs 4
+        run: python -m ruff format . --check
 
   # ───────────────────────────────────────────────────────────────
   # Job B: Detect manifest.json changes (after ruff)
