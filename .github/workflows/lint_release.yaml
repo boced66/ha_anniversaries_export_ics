@@ -4,8 +4,25 @@ on:
   push:
     branches:
       - main
-
 jobs:
+  ruff:
+    name: "Lint with Ruff"
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Install lint dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-lint.txt
+
+      - name: Run Ruff lint (all files, 4 threads)
+        run: python -m ruff check . --threads 4
+
+      - name: Run Ruff format check (4 threads)
+        run: python -m ruff format . --check --threads 4
+
+
   # ───────────────────────────────────────────────────────────────
   # Job A: Ruff lint / format checks (runs on every push)
   # ───────────────────────────────────────────────────────────────
@@ -19,7 +36,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
+      
       # 2) Installer Python et cacher pip
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -32,15 +49,15 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .ruff_cache
-          key: ${{ runner.os }}-ruff-${{ hashFiles('**/*.py') }}
+          key: ${{ runner.os }}-ruff-${{ hashFiles('requirements-lint.txt') }}
 
-      # 4) Installer les dépendances Python
-      - name: Install dependencies
+      # 4) Installer les dépendances de lint
+      - name: Install lint dependencies
         run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          pip install -r requirements-lint.txt
 
-      # 5) Lint complet (parallélisé)
+      # 5) Lint complet 
       - name: Run Ruff lint (all files)
         run: python -m ruff check . 
 
