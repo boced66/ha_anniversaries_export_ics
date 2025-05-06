@@ -12,43 +12,55 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout code
+      # 1) Clone tout le dépôt (avec tous les tags)
+      - name: "Checkout code"
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Get version from manifest.json
+      # 2) Extraire la version brute (sans guillemets)
+      - name: "Get version from manifest.json"
         id: get_version
         run: |
           VERSION=$(jq -r .version custom_components/ha_anniversaries_export_ics/manifest.json)
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT;
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Check if tag exists
+      # 3) Vérifier si le tag existe déjà
+      - name: "Check if tag exists"
         id: check_tag
         run: |
-          VERSION=${{ steps.get_version.outputs.VERSION }}
-          if git fetch --tags && git rev-parse "$VERSION" >/dev/null 2>&1; then
-            echo "Tag $VERSION already exists"
+          TAG=${{ steps.get_version.outputs.version }}
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
-            echo "Tag $VERSION does not exist"
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create GitHub Release
+      # 4) Créer et pousser le tag si nécessaire
+      - name: "Create and push tag"
         if: steps.check_tag.outputs.exists == 'false'
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ steps.get_version.outputs.VERSION }}
-          name: Release ${{ steps.get_version.outputs.VERSION }}
-          draft: false
-          prerelease: ${{ contains( steps.get_version.outputs.VERSION, '-' ) }}
-      
+        run: |
+          TAG=${{ steps.get_version.outputs.version }}
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "$TAG"
+          git push origin "$TAG"
+
+      # 5) Archiver l’intégration
       - name: "ZIP the integration directory"
-        shell: "bash"
+        if: steps.check_tag.outputs.exists == 'false'
         run: |
           cd "${{ github.workspace }}/custom_components/ha_anniversaries_export_ics"
-          zip ha_anniversaries_export_ics.zip -r ./
+          zip -r ha_anniversaries_export_ics.zip ./
 
-      - name: "Upload the ZIP file to the release"
-        uses: "softprops/action-gh-release@v2.0.8"
+      # 6) Créer la release et uploader l’archive
+      - name: "Create GitHub Release and upload ZIP"
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
         with:
-          files: ${{ github.workspace }}/custom_components/ha_anniversaries_export_ics/ha_anniversaries_export_ics.zip
+          tag_name: ${{ steps.get_version.outputs.version }}
+          name: Release ${{ steps.get_version.outputs.version }}
+          draft: false
+          prerelease: ${{ contains( steps.get_version.outputs.version, '-' ) || contains( steps.get_version.outputs.version, 'b') || contains( steps.get_version.outputs.version, 'rc') }}
+          files: |
+            custom_components/ha_anniversaries_export_ics/ha_anniversaries_export_ics.zip
