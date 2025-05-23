@@ -1,6 +1,6 @@
 """API for calendar export."""
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 from http import HTTPStatus
 
 from aiohttp import web
@@ -61,6 +61,9 @@ class AnniversaryExportAPI(http.HomeAssistantView):
 
         for a in anniversaries:
             start = a.attributes.get("next_date")
+            if isinstance(start, datetime):  # on convertit en date pure
+                start = start.date()
+                
             e = Event()
             e.add("uid", a.entity_id)
             e.add(
