@@ -89,7 +89,7 @@ class AnniversaryExportAPI(http.HomeAssistantView):
 
             if self.show_last_year:
                 e = Event()
-                e.add("uid", a.entity_id)
+                e.add("uid", a.entity_id + "last_year")
                 e.add(
                     "summary",
                     self.summary_format.format(
