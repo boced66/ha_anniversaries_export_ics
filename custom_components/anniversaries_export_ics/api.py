@@ -32,7 +32,7 @@ class AnniversaryExportAPI(http.HomeAssistantView):
             if name == "summary_format":
                 self.summary_format = str(value)
             if name == "show_last_year":
-                self.show_last_year = str(value).lower() == "true"
+                self.show_last_year = bool(value)
         self.hass = hass
 
     async def get(self, request: web.Request):  # noqa: ANN201
@@ -105,7 +105,7 @@ class AnniversaryExportAPI(http.HomeAssistantView):
                         icon=a.attributes.get("icon"),
                     ),
                 )
-                e.add("dtstart", start)
+                e.add("dtstart", start - relativedelta(years=1))
                 e.add("dtend", start + timedelta(days=1) - relativedelta(years=1))
                 cal.add_component(e)
 
