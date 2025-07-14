@@ -1,5 +1,6 @@
 """API for calendar export."""
 
+from dateutil.relativedelta import relativedelta
 from datetime import datetime, timedelta
 from http import HTTPStatus
 
@@ -15,6 +16,7 @@ class AnniversaryExportAPI(http.HomeAssistantView):
     url = "/api/anniversaries/export.ics"
     name = "api:anniversaries:ics"
     requires_auth = False
+    show_last_year = False
 
     def __init__(self, hass: HomeAssistant, config: dict, domain: str) -> None:
         """Initialize the iCalendar view."""
@@ -29,6 +31,8 @@ class AnniversaryExportAPI(http.HomeAssistantView):
                 self.agenda_name = str(value)
             if name == "summary_format":
                 self.summary_format = str(value)
+            if name == "show_last_year":
+                self.show_last_year = str(value).lower() == 'true'
         self.hass = hass
 
     async def get(self, request: web.Request):  # noqa: ANN201
@@ -82,6 +86,26 @@ class AnniversaryExportAPI(http.HomeAssistantView):
             e.add("dtstart", start)
             e.add("dtend", start + timedelta(days=1))
             cal.add_component(e)
+            
+            if(self.show_last_year):
+                e = Event()
+                e.add("uid", a.entity_id)
+                e.add(
+                    "summary",
+                    self.summary_format.format(
+                        friendly_name=a.attributes.get("friendly_name"),
+                        years_at_anniversary=a.attributes.get("years_at_anniversary") - 1,
+                        current_years=a.attributes.get("current_years") - 1,
+                        date=a.attributes.get("date") - relativedelta(years=1),
+                        next_date=a.attributes.get("next_date") - relativedelta(years=1),
+                        weeks_remaining=a.attributes.get("weeks_remaining"),
+                        unit_of_measurement=a.attributes.get("unit_of_measurement"),
+                        icon=a.attributes.get("icon"),
+                    ),
+                )
+                e.add("dtstart", start)
+                e.add("dtend", start + timedelta(days=1) - relativedelta(years=1))
+                cal.add_component(e)
 
         ics = cal.to_ical().decode("utf-8")
 
